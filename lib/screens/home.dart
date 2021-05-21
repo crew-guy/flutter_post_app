@@ -5,6 +5,10 @@ import '../widgets/post_list.dart';
 import '../widgets/text_input_widget.dart';
 
 class MyHomePage extends StatefulWidget {
+  final String name;
+
+  MyHomePage(this.name);
+
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
@@ -14,7 +18,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void newPost(text) {
     setState(() {
-      this.posts.add(new Post(text, "Ankit"));
+      this.posts.add(new Post(text, widget.name));
     });
   }
 

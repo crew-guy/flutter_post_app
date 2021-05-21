@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 
 class TextInputWidget extends StatefulWidget {
   final Function callback;
+
+  // Initiate widget with this callback as a value
   TextInputWidget(this.callback);
 
   @override
