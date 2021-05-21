@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sample_app/screens/home.dart';
+import 'package:sample_app/services/auth.dart';
 
 class LoginPage extends StatelessWidget {
   @override
@@ -19,38 +21,49 @@ class Body extends StatefulWidget {
 }
 
 class _BodyState extends State<Body> {
-  String name;
-  final controller = TextEditingController();
+  FirebaseUser user;
+
+  // Lifecycle method that runs every time app is reinitialized i.e. app is started on device
+  // Runs as soon as APK is loaded
+  @override
+  void initState() {
+    super.initState();
+    signOutGoogle();
+  }
 
   void click() {
-    this.name = this.controller.text;
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => MyHomePage(this.name)));
+    signInWithGoogle().then((user) => {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => MyHomePage(user)))
+        });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.center,
+    return Align(alignment: Alignment.center, child: googleLoginButton());
+  }
+
+  Widget googleLoginButton() {
+    return OutlinedButton(
+      onPressed: this.click,
       child: Padding(
-        padding: EdgeInsets.all(10.0),
-        child: TextField(
-          controller: this.controller,
-          decoration: InputDecoration(
-            prefixIcon: Icon(Icons.person),
-            suffixIcon: IconButton(
-              icon: Icon(Icons.done),
-              splashColor: Colors.blue,
-              tooltip: 'Submit',
-              onPressed: this.click,
-            ),
-            labelText: 'Naav kaay tujha ?',
-            hintText: 'Enter your name',
-            border: OutlineInputBorder(
-              borderSide: BorderSide(width: 5, color: Colors.black),
-            ),
-          ),
-        ),
+        padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Image(image: AssetImage('assets/google_logo.png'), height: 35),
+              Padding(
+                padding: EdgeInsets.only(left: 10),
+                child: Text(
+                  'Sign in with Google',
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 25,
+                  ),
+                ),
+              )
+            ]),
       ),
     );
   }

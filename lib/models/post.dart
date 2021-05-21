@@ -1,18 +1,50 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:sample_app/services/database.dart';
+
 class Post {
-  String text;
+  String body;
   String author;
-  int likes = 0;
-  bool userLiked = false;
+  Set usersLiked = {};
+  DatabaseReference _id;
 
-  Post(this.text, this.author);
+  Post(this.body, this.author);
 
-  void likePost() {
-    if (!this.userLiked) {
-      this.likes += 1;
-      this.userLiked = true;
+  void likePost(FirebaseUser user) {
+    if (this.usersLiked.contains(user.uid)) {
+      this.usersLiked.remove(user.uid);
     } else {
-      this.userLiked = false;
-      this.likes -= 1;
+      this.usersLiked.add(user.uid);
     }
+    this.update();
   }
+
+  void update() {
+    updatePost(this, this._id);
+  }
+
+  void setId(DatabaseReference id) {
+    this._id = id;
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'author': this.author,
+      'usersLiked': this.usersLiked.toList(),
+      'body': this.body,
+    };
+  }
+}
+
+Post createPost(record) {
+  Map<String, dynamic> attributes = {
+    'author': "",
+    'text': "",
+    'usersLiked': [],
+  };
+  record.forEach((key, value) => {attributes[key] = value});
+
+  Post post = new Post(attributes['body'], attributes['author']);
+  post.usersLiked = new Set.from(attributes['usersLiked']);
+  return post;
 }
