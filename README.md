@@ -105,4 +105,86 @@
     }
     ```
     
+  ## Firebase realtime database integration
+  
+  ```jsx
+import 'package:firebase_database/firebase_database.dart';
+import 'package:sample_app/models/post.dart';
+
+final databaseReference = FirebaseDatabase.instance.reference();
+
+DatabaseReference savePost(Post post) {
+  var id = databaseReference.child('posts/').push();
+  id.set(post.toJson());
+  return id;
+}
+
+void updatePost(Post post, DatabaseReference id) {
+  id.update(post.toJson());
+}
+
+Future<List<Post>> getAllPosts() async {
+  DataSnapshot dataSnapshot = await databaseReference.child('posts/').once();
+  List<Post> posts = [];
+  if (dataSnapshot.value != null) {
+    dataSnapshot.value.forEach((key, value) {
+      Post post = createPost(value);
+      post.setId(databaseReference.child('posts/' + key));
+      posts.add(post);
+    });
+  }
+  return posts;
+}
+```
+
+## Post input 
+
+- More detailed Text input
+
+    ![https://s3-us-west-2.amazonaws.com/secure.notion-static.com/c830fde2-cd39-46d0-a69e-5bcb971f42ff/Untitled.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/c830fde2-cd39-46d0-a69e-5bcb971f42ff/Untitled.png)
+
+    ```dart
+    class Body extends StatefulWidget {
+      @override
+      _BodyState createState() => _BodyState();
+    }
+
+    class _BodyState extends State<Body> {
+      String name;
+      final controller = TextEditingController();
+
+      void click() {
+        this.name = this.controller.text;
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => MyHomePage(this.name)));
+      }
+
+      @override
+      Widget build(BuildContext context) {
+        return Align(
+          alignment: Alignment.center,
+          child: Padding(
+            padding: EdgeInsets.all(10.0),
+            child: TextField(
+              controller: this.controller,
+              decoration: InputDecoration(
+                prefixIcon: Icon(Icons.person),
+                suffixIcon: IconButton(
+                  icon: Icon(Icons.done),
+                  splashColor: Colors.blue,
+                  tooltip: 'Submit',
+                  onPressed: this.click,
+                ),
+                labelText: 'Naav kaay tujha ?',
+                hintText: 'Enter your name',
+                border: OutlineInputBorder(
+                  borderSide: BorderSide(width: 5, color: Colors.black),
+                ),
+              ),
+            ),
+          ),
+        );
+      }
+    }
+    ```
     
