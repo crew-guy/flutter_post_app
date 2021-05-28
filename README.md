@@ -188,3 +188,95 @@ Future<List<Post>> getAllPosts() async {
     }
     ```
     
+    
+ ## Using custom fonts
+ 
+ 3 steps :
+
+1. Mention font asset sources in pubspec.yaml
+2. Create a `style.dart` to store custom style config 
+3. Tell main app widget to use custom style config
+4. Ask individual widgets to use whichever config they want
+
+```yaml
+fonts:
+    - family: Montserrat
+      fonts:
+        - asset: assets/fonts/Montserrat-Regular.ttf
+          weight: 300
+        - asset: assets/fonts/Montserrat-Bold.ttf
+          weight: 600 
+```
+
+```dart
+import 'package:flutter/material.dart';
+
+const LargeTextSize = 26.0;
+const MediumTextSize = 20.0;
+const BodyTextSize = 16.0;
+
+const String FontNameDefault = 'Montserrat';
+
+const AppBarTextStyle = TextStyle(
+  fontFamily: FontNameDefault,
+  fontSize: MediumTextSize,
+  fontWeight: FontWeight.w300,
+  color: Colors.white,
+);
+
+const TitleTextStyle = TextStyle(
+    fontFamily: FontNameDefault,
+    fontSize: LargeTextSize,
+    fontWeight: FontWeight.w600,
+    color: Colors.black);
+
+const Body1TextStyle = TextStyle(
+  fontFamily: FontNameDefault,
+  fontSize: BodyTextSize,
+  fontWeight: FontWeight.w300,
+  color: Colors.black,
+);
+```
+
+```dart
+class MyApp extends StatelessWidget {
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+        home: LocationDetail(),
+        theme: ThemeData(
+            appBarTheme: AppBarTheme(
+              textTheme: TextTheme(title: AppBarTextStyle),
+            ),
+            textTheme:
+                TextTheme(title: TitleTextStyle, body1: Body1TextStyle)));
+  }
+```
+
+```dart
+class TextSection extends StatelessWidget {
+  final String _title;
+  final String _body;
+  static const _hPad = 15.0;
+
+  TextSection(this._title, this._body) {}
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.fromLTRB(_hPad, 13.0, _hPad, 8.0),
+            child: Text(this._title, style: Theme.of(context).textTheme.title),
+          ),
+          Container(
+            padding: const EdgeInsets.fromLTRB(_hPad, 13.0, _hPad, 8.0),
+            child: Text(this._body, style: Theme.of(context).textTheme.body1),
+          )
+        ]);
+  }
+}
+```
